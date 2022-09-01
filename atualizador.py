@@ -11,7 +11,7 @@ planilha = pd.read_excel("base_de_dados/Produtos para atualizar.xlsx",
 
 async def run(playwright):
     chromium = playwright.chromium
-    browser = await chromium.launch(headless=False, timeout=10000)
+    browser = await chromium.launch(timeout=10000)
     context = await browser.new_context()
     page = await context.new_page()
     await page.goto("https://sistemas.mt.senac.br/")
@@ -52,15 +52,15 @@ async def run(playwright):
         await mxm.keyboard.press('Tab')
         await frameProduct.locator("#ext-gen26").click()
         time.sleep(3)
-        tempos = time.time() - t1
+        tempos = (time.time() - t1)/60
         if(index == 500):
-            print("Print "+index+" items alterados em --->> "+tempos+"")
+            print(index, " items alterados em --->> ", tempos)
         if(index == 1000):
-            print("Print "+index+" items alterados em --->> "+tempos+"")
+            print(index, " items alterados em --->> ", tempos)
         if(index == 2000):
-            print("Print "+index+" items alterados em --->> "+tempos+"")
+            print(index, " items alterados em --->> ", tempos)
         if(index == 4000):
-            print("Print "+index+" items alterados em --->> "+tempos+"")
+            print(index, " items alterados em --->> ", tempos)
     time.sleep(5)
     tempoExec = time.time() - t1
     print("Quantidade de alterações "+index +
