@@ -1,4 +1,3 @@
-import pyautogui
 import time
 import asyncio
 from playwright.async_api import async_playwright
@@ -23,12 +22,10 @@ async def run(playwright):
     await mxm.locator("#txfSenha").fill("Alterar@2022")
     await mxm.locator("#ext-gen19").click()
     time.sleep(2)
-    avaliacao = pyautogui.locateOnScreen('Avaliacao.png', confidence=0.9)
-    time.sleep(2)
-    if (avaliacao != None):
-        await mxm.locator(
-            "//*[@id='conpass-tag']/div/div/div[2]/div[1]/div[1]").click()
-    time.sleep(3)
+    try:
+        await mxm.locator("//*[@id='conpass-tag']/div/div/div[2]/div[1]/div[1]").click()
+    except:
+        print("Sem pesquisa")
     await mxm.locator("#tgfBusca").fill("1022")
     await mxm.locator("#ext-gen37").click()
     frameSearch = mxm.frame_locator("//iframe[contains(@id,'_BUSCA__IFrame')]")
@@ -41,15 +38,22 @@ async def run(playwright):
         print(str(produtos))
         print(index)
         await frameProduct.locator("#hpfCodigo").fill('')
+        time.sleep(0.7)
         await frameProduct.locator("#hpfCodigo").fill(str(codigo))
+        time.sleep(0.7)
         await mxm.keyboard.press('Tab')
+        time.sleep(0.7)
         await frameProduct.locator("#chkControleLiberadoParaMovimentacao").uncheck()
         inativo = "inativo - "
+        time.sleep(0.7)
         await frameProduct.locator("#txfDescricao").fill(
             inativo.upper()+str(produtos).upper())
         tipo_do_item = "07 - MATERIAL DE USO E CONSUMO"
+        time.sleep(0.7)
         await frameProduct.locator("#hpcTipoItem").fill(tipo_do_item)
+        time.sleep(0.7)
         await mxm.keyboard.press('Tab')
+        time.sleep(0.7)
         await frameProduct.locator("#ext-gen26").click()
         time.sleep(3)
         tempos = (time.time() - t1)/60
