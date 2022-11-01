@@ -3,13 +3,13 @@ import asyncio
 from playwright.async_api import async_playwright
 import pandas as pd
 from dotenv import load_dotenv
-from unidecode import unidecode
 import os
+from unidecode import unidecode
 load_dotenv()
 
 t1 = time.time()
-planilha = pd.read_excel("base_de_dados/Produtos restantes.xlsx",
-                         "CAIXA ALTA", usecols=['Cd.Produto', 'Produto'], dtype='string')
+planilha = pd.read_excel("base_de_dados/INATIVAR.xlsx",
+                         "INATIVAR", usecols=['Cd.Produto', 'Produto'], dtype='string')
 
 
 async def run(playwright):
@@ -32,28 +32,33 @@ async def run(playwright):
         print("Sem pesquisa")
     await mxm.locator("#tgfBusca").fill(os.environ['PROCESSO'])
     await mxm.locator("#ext-gen33").click()
-    time.sleep(5)
     frameSearch = mxm.frame_locator("//iframe[contains(@id,'_BUSCA__IFrame')]")
     await frameSearch.locator("//a", has_text="Produto").click()
     frameProduct = mxm.frame_locator("//iframe[contains(@id,'1022_IFrame')]")
     for index, row in planilha.iterrows():
         codigo = row['Cd.Produto']
-        print(str(codigo))
+        print(codigo)
         produtos = row['Produto']
-        print(unidecode(produtos))
+        print(unidecode(produtos).upper())
         print(index)
         await frameProduct.locator("#hpfCodigo").fill('')
-        time.sleep(1)
+        time.sleep(1.5)
         await frameProduct.locator("#hpfCodigo").fill(str(codigo))
         time.sleep(2)
         await mxm.keyboard.press('Tab')
-        time.sleep(1)
-        await frameProduct.locator("#txfDescricao").fill(unidecode(produtos).upper())
+        time.sleep(1.5)
+        await frameProduct.locator("#chkControleLiberadoParaMovimentacao").uncheck()
+        inativo = "inativo - "
+        description = inativo + produtos
+        time.sleep(1.5)
+        await frameProduct.locator("#txfDescricao").fill(
+            unidecode(description).upper())
+        await frameProduct.locator("#hpcCodigoGrupoCotacao").fill('')
         await mxm.keyboard.press('Tab')
         await mxm.keyboard.press('Tab')
         await mxm.keyboard.press('Tab')
         await mxm.keyboard.press('Tab')
-        time.sleep(1)
+        time.sleep(1.5)
         await frameProduct.locator("#ext-gen26").click()
         time.sleep(3)
         tempos = (time.time() - t1)/60
